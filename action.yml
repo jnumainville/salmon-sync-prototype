@@ -1,0 +1,58 @@
+name: Sync Salmon Directory
+description: Syncs a directory to a Google Cloud bucket using rclone.
+author: 'deephaven'
+inputs:
+  source:
+    required: true
+    type: string
+    description: 'The source artifact to sync.'
+  destination:
+    required: true
+    type: string
+    description: 'The destination directory to sync. Should be a subdirectory of the bucket.'
+  project_number:
+    required: true
+    type: string
+    description: 'The Google Cloud project number.'
+  bucket:
+    required: true
+    type: string
+    description: 'The Google Cloud bucket to sync to.'
+  credentials:
+    required: true
+    type: string
+    description: 'The Google Cloud credentials.'
+
+runs:
+  using: "composite"
+  runs-on: ubuntu-22.04
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Download files to sync
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.source }}
+        path: temp
+
+    - name: Setup rclone
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y rclone=1.53.3-4ubuntu1.22.04.2
+
+        mkdir -p $HOME/.config
+        mkdir -p $HOME/.config/rclone
+
+        cat << EOF > $HOME/.config/rclone/rclone.conf
+        [docs]
+        type = google cloud storage
+        service_account_file = $HOME/credentials.json
+        project_number = ${{ inputs.project_number }}
+        bucket_policy_only = true
+        EOF
+        
+        echo ${{ inputs.credentials }} | base64 -d > $HOME/credentials.json
+
+    - name: Sync blog
+      run: rclone sync temp docs:${{ inputs.bucket }}/${{ inputs.destination }}

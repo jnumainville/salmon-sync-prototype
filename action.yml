@@ -9,7 +9,7 @@ inputs:
   destination:
     required: true
     type: string
-    description: 'The destination directory to sync. Should be a subdirectory of the bucket.'
+    description: 'The destination directory to sync. Relative to the bucket.'
   project_number:
     required: true
     type: string

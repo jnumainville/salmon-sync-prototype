@@ -5,7 +5,7 @@ inputs:
   source:
     required: true
     type: string
-    description: 'The source artifact to sync.'
+    description: 'The source directory to sync.'
   destination:
     required: true
     type: string
@@ -29,12 +29,6 @@ runs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Download files to sync
-      uses: actions/download-artifact@v4
-      with:
-        name: ${{ inputs.source }}
-        path: temp
-
     - name: Setup rclone
       shell: bash
       run: |
@@ -56,4 +50,4 @@ runs:
 
     - name: Sync blog
       shell: bash
-      run: rclone sync temp docs:${{ inputs.bucket }}/${{ inputs.destination }}
+      run: rclone sync ${{ inputs.source }} docs:${{ inputs.bucket }}/${{ inputs.destination }}

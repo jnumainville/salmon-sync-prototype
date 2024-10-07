@@ -24,4 +24,9 @@ inputs:
     required: true
     type: string
     description: 'The Google Cloud credentials.'
+  delete-artifact:
+    required: false
+    type: boolean
+    description: 'Whether to delete the artifact after syncing. Default is true. Recommened if the artifact is large and not needed after syncing.'
+    default: true
 ```

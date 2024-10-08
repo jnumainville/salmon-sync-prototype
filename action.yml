@@ -50,15 +50,11 @@ runs:
         project_number = ${{ inputs.project_number }}
         bucket_policy_only = true
         EOF
+
+        ls -la .
         
         echo ${{ inputs.credentials }} | base64 -d > $HOME/credentials.json
 
     - name: Sync blog
       shell: bash
       run: rclone sync ${{ inputs.source }} docs:${{ inputs.bucket }}/${{ inputs.destination }}
-
-    - name: Delete artifact
-      if: ${{ inputs.delete-artifact }}
-      uses: geekyeggo/delete-artifact@v5
-      with:
-          name: ${{ inputs.source }}
